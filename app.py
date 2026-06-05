@@ -28,9 +28,9 @@ if st.button("Generate Recipe"):
     else:
         with st.spinner("Chef is cooking up a recipe..."):
             try:
-                # Call the AI model
+                # Call the updated AI model
                 response = client.chat.completions.create(
-                    model="llama3-8b-8192",
+                    model="llama-3.3-70b-versatile",
                     messages=[
                         {"role": "system", "content": "You are a helpful cooking assistant. Suggest a simple recipe based on the provided ingredients."},
                         {"role": "user", "content": f"I have these ingredients: {ingredients}. Give me a recipe."}
