@@ -13,5 +13,3 @@ Pantry Chef is an intelligent AI assistant designed to minimize food waste by ge
       Run the app:Bashstreamlit run app.py
 # 🌐 Deployment:
     This application is deployed on Streamlit Community Cloud. For deployment, sensitive API keys are securely managed via the Secrets Management interface to ensure data privacy and security.
-  # 👤 About
-      This project was developed as part of the AICTE-2026 internship program in collaboration with Edunet Foundation, focusing on building agentic AI solutions.
