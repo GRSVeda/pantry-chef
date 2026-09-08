@@ -1,43 +1,54 @@
 import streamlit as st
-from openai import OpenAI
+from groq import Groq
 
-# Set up the page title
-st.set_page_config(page_title="Pantry Chef")
-st.title("Pantry Chef 🧑‍🍳")
-st.subheader("Turn your leftover ingredients into a delicious recipe!")
+# Page configuration
+st.set_page_config(page_title="Pantry Chef", page_icon="🍳", layout="centered")
 
-# Retrieve the secret key from the Streamlit cloud settings
-try:
-    api_key = st.secrets["OPENAI_API_KEY"]
-except Exception:
-    st.error("API Key not found. Please add 'OPENAI_API_KEY' to your Streamlit Secrets.")
+st.title("🍳 Pantry Chef")
+st.write("Generate recipes instantly based on the ingredients you have on hand!")
+
+# Initialize Groq client using Streamlit Secrets
+groq_api_key = st.secrets.get("GROQ_API_KEY")
+
+if not groq_api_key:
+    st.error("Groq API key not found! Please add it to your Streamlit Secrets.")
     st.stop()
 
-# Initialize the Groq client
-client = OpenAI(
-    api_key=api_key, 
-    base_url="https://api.groq.com/openai/v1"
-)
+client = Groq(api_key=groq_api_key)
 
-# User input
-ingredients = st.text_input("Enter the ingredients you have (e.g., tomato, onion, egg):")
+# Active model identifier
+MODEL_NAME = "llama-3.1-8b-instant"
 
-if st.button("Generate Recipe"):
-    if not ingredients:
-        st.warning("Please enter some ingredients first!")
+# User input form
+with st.form("recipe_form"):
+    ingredients_input = st.text_input(
+        "Enter ingredients (comma-separated):",
+        placeholder="e.g., chicken, garlic, tomatoes, rice"
+    )
+    submitted = st.form_submit_button("Generate Recipe")
+
+if submitted:
+    if not ingredients_input.strip():
+        st.warning("Please enter at least one ingredient.")
     else:
-        with st.spinner("Chef is cooking up a recipe..."):
+        with st.spinner("Cooking up a recipe..."):
             try:
-                # Call the updated AI model
-                response = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                prompt = f"Create a delicious recipe using these ingredients: {ingredients_input}."
+                
+                chat_completion = client.chat.completions.create(
                     messages=[
-                        {"role": "system", "content": "You are a helpful cooking assistant. Suggest a simple recipe based on the provided ingredients."},
-                        {"role": "user", "content": f"I have these ingredients: {ingredients}. Give me a recipe."}
-                    ]
+                        {
+                            "role": "user",
+                            "content": prompt,
+                        }
+                    ],
+                    model=MODEL_NAME,
                 )
-                # Display the result
-                st.markdown("### Your Recipe:")
-                st.write(response.choices[0].message.content)
+                
+                recipe_result = chat_completion.choices[0].message.content
+                
+                st.success("Here is your recipe!")
+                st.markdown(recipe_result)
+                
             except Exception as e:
                 st.error(f"An error occurred: {e}")
