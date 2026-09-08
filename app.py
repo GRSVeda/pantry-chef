@@ -16,8 +16,8 @@ if not groq_api_key:
 
 client = Groq(api_key=groq_api_key)
 
-# Active model identifier
-MODEL_NAME = "llama-3.1-8b-instant"
+# Active production model identifier
+MODEL_NAME = "openai/gpt-oss-20b"
 
 # User input form
 with st.form("recipe_form"):
